@@ -1,0 +1,143 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Background Video */
+.video{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+}
+
+/* Main Container */
+.overlay{
+    text-align: center;
+    color: white;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Heading */
+h1{
+    margin-bottom: 20px;
+}
+
+/* Search Section */
+.search-box{
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Inputs */
+input{
+    padding: 10px;
+    width: 250px;
+    max-width: 100%;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Buttons */
+button{
+    padding: 10px 12px;
+    border: none;
+    background: #ff4757;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Dropdown */
+select{
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Results Grid */
+#results{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+/* Anime Card */
+.card{
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.card img{
+    width: 100%;
+    border-radius: 10px;
+}
+
+.card h3{
+    margin: 10px 0;
+}
+
+/* Synopsis */
+.synopsis{
+    font-size: 12px;
+    display: none;
+}
+
+.show{
+    display: block;
+}
+
+/* Hover Effects */
+button:hover{
+    opacity: 0.8;
+}
+
+.card:hover{
+    transform: scale(1.05);
+}
+
+/* Tablet */
+@media (max-width: 768px){
+    h1{
+        font-size: 24px;
+    }
+
+    input{
+        width: 200px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px){
+    .search-box{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    input{
+        width: 90%;
+    }
+
+    button, select{
+        width: 90%;
+    }
+
+    h1{
+        font-size: 20px;
+    }
+}
