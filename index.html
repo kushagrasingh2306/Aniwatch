@@ -11,29 +11,44 @@
 
     <div class="overlay">
         <div class="navbar">
-        <h1>AniWatch</h1>
+            <h1>AniWatch</h1>
+            <button id="themeToggle" class="theme-btn" title="Toggle Theme">🌓</button>
         </div>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search anime...">
-            <button id="searchBtn">Search</button>
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search anime keywords...">
+                <button id="searchBtn">Search</button>
+            </div>
 
-            <button id="trendingBtn">Trending</button>
+            <div class="filter-box">
+                <select id="genreSelect">
+                    <option value="">All Genres</option>
+                    <option value="1">Action</option>
+                    <option value="2">Adventure</option>
+                    <option value="4">Comedy</option>
+                    <option value="8">Drama</option>
+                    <option value="10">Fantasy</option>
+                    <option value="22">Romance</option>
+                </select>
 
-            <select id="genreSelect">
-                <option value="">Genre</option>
-                <option value="1">Action</option>
-                <option value="2">Adventure</option>
-                <option value="4">Comedy</option>
-                <option value="8">Drama</option>
-                <option value="10">Fantasy</option>
-                <option value="22">Romance</option>
-            </select>
+                <select id="sortSelect">
+                    <option value="default">Sort By</option>
+                    <option value="az">A-Z (Alphabetical)</option>
+                    <option value="za">Z-A (Alphabetical)</option>
+                    <option value="score">Top Rated</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+
+                <button id="trendingBtn">Trending</button>
+            </div>
         </div>
 
         <div id="results"></div>
+        <button id="viewMoreBtn" class="view-more hov-pulse" style="display: none;">View More</button>
     </div>
 
     <script src="index.js"></script>
+
 </body>
 </html>

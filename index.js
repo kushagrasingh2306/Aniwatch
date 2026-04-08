@@ -1,76 +1,161 @@
+// DOM Elements
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 const results = document.getElementById("results");
-
-// Fetch anime
-async function fetchAnime(query) {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`);
-        const data = await res.json();
-        displayAnime(data.data);
-    } catch (error) {
-        console.log("Error fetching data:", error);
-    }
-}
-
-// Display anime
-function displayAnime(animeList) {
-    results.innerHTML = "";
-
-    animeList.slice(0, 12).forEach(anime => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-
-        card.innerHTML = `
-            <img src="${anime.images.jpg.image_url}" alt="">
-            <h3>${anime.title}</h3>
-            <button class="toggleBtn">Synopsis</button>
-            <p class="synopsis">${anime.synopsis ? anime.synopsis.substring(0, 100) + "..." : "No synopsis available"}</p>
-        `;
-
-        // Toggle synopsis
-        const btn = card.querySelector(".toggleBtn");
-        const synopsis = card.querySelector(".synopsis");
-
-        btn.addEventListener("click", () => {
-            synopsis.classList.toggle("show");
-        });
-
-        results.appendChild(card);
-    });
-}
-
-// Event listener
-searchBtn.addEventListener("click", () => {
-    const query = searchInput.value;
-    if(query) fetchAnime(query);
-});
-
 const trendingBtn = document.getElementById("trendingBtn");
 const genreSelect = document.getElementById("genreSelect");
+const sortSelect = document.getElementById("sortSelect");
+const themeToggle = document.getElementById("themeToggle");
+const viewMoreBtn = document.getElementById("viewMoreBtn");
 
-// Trending Anime
-trendingBtn.addEventListener("click", async () => {
+// State Management
+let masterList = [];   // All fetched data from API
+let filteredList = []; // After search, filter, and sort
+let visibleCount = 12; // Controls pagination
+let favorites = JSON.parse(localStorage.getItem('aniwatch_favs')) || [];
+
+// --- API Logic ---
+
+async function fetchAnime(endpoint, params = "") {
     try {
-        const res = await fetch("https://api.jikan.moe/v4/top/anime");
+        results.innerHTML = "<div class='loader'>Loading amazing anime...</div>";
+        const res = await fetch(`https://api.jikan.moe/v4/${endpoint}${params}`);
         const data = await res.json();
-        displayAnime(data.data);
-    } catch (err) {
-        console.log(err);
+        
+        masterList = data.data || [];
+        applyAllControls();
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        results.innerHTML = "<div class='error'>Failed to load data. Please try again.</div>";
     }
-});
+}
 
-// Genre-based search
-genreSelect.addEventListener("change", async () => {
+// --- Core Logic (Using Array HOFs) ---
+
+function applyAllControls() {
+    // 1. Searching (HOF: filter)
+    const query = searchInput.value.toLowerCase().trim();
+    let processed = masterList.filter(anime => 
+        anime.title.toLowerCase().includes(query) || 
+        (anime.synopsis && anime.synopsis.toLowerCase().includes(query))
+    );
+
+    // 2. Filtering by Genre (HOF: filter)
     const genreId = genreSelect.value;
-
-    if (!genreId) return;
-
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime?genres=${genreId}`);
-        const data = await res.json();
-        displayAnime(data.data);
-    } catch (err) {
-        console.log(err);
+    if (genreId) {
+        processed = processed.filter(anime => 
+            anime.genres.some(g => g.mal_id == genreId)
+        );
     }
+
+    // 3. Sorting (HOF: sort)
+    const sortVal = sortSelect.value;
+    processed.sort((a, b) => {
+        if (sortVal === "az") return a.title.localeCompare(b.title);
+        if (sortVal === "za") return b.title.localeCompare(a.title);
+        if (sortVal === "score") return (b.score || 0) - (a.score || 0);
+        if (sortVal === "popular") return (b.members || 0) - (a.members || 0);
+        return 0; // default
+    });
+
+    filteredList = processed;
+    visibleCount = 12; // reset pagination on filter change
+    render();
+}
+
+function render() {
+    results.innerHTML = "";
+    
+    // 4. Pagination (HOF: slice)
+    const toDisplay = filteredList.slice(0, visibleCount);
+
+    // 5. Displaying (HOF: map)
+    const cards = toDisplay.map(anime => {
+        const isFav = favorites.includes(anime.mal_id);
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+            <img src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy">
+            <h3>${anime.title}</h3>
+            <p class="synopsis">${anime.synopsis ? anime.synopsis.substring(0, 150) + "..." : "No synopsis available."}</p>
+            <div class="card-actions">
+                <button class="toggle-btn">Synopsis</button>
+                <button class="fav-btn" data-id="${anime.mal_id}">
+                    ${isFav ? "❤️" : "🤍"}
+                </button>
+            </div>
+        `;
+
+        // Interactive: Toggle Synopsis
+        const toggleBtn = card.querySelector(".toggle-btn");
+        const synopsis = card.querySelector(".synopsis");
+        toggleBtn.addEventListener("click", () => {
+            synopsis.classList.toggle("show");
+            toggleBtn.textContent = synopsis.classList.contains("show") ? "Hide" : "Synopsis";
+        });
+
+        // Interactive: Favorite
+        const favBtn = card.querySelector(".fav-btn");
+        favBtn.addEventListener("click", () => toggleFavorite(anime.mal_id, favBtn));
+
+        return card;
+    });
+
+    // Append all cards
+    cards.forEach(card => results.appendChild(card));
+
+    // Show/Hide View More button
+    viewMoreBtn.style.display = (visibleCount < filteredList.length) ? "block" : "none";
+    
+    if (filteredList.length === 0) {
+        results.innerHTML = "<div class='no-results'>No anime found matching your criteria.</div>";
+    }
+}
+
+function toggleFavorite(id, btn) {
+    if (favorites.includes(id)) {
+        favorites = favorites.filter(favId => favId !== id);
+        btn.textContent = "🤍";
+    } else {
+        favorites.push(id);
+        btn.textContent = "❤️";
+    }
+    localStorage.setItem('aniwatch_favs', JSON.stringify(favorites));
+}
+
+// --- Event Listeners ---
+
+const handleSearch = async () => {
+    const query = searchInput.value.toLowerCase().trim();
+    if (query) {
+        await fetchAnime("anime", `?q=${query}`);
+    } else {
+        await fetchAnime("top/anime");
+    }
+};
+
+searchBtn.addEventListener("click", handleSearch);
+searchInput.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") handleSearch();
 });
+
+genreSelect.addEventListener("change", applyAllControls);
+sortSelect.addEventListener("change", applyAllControls);
+
+trendingBtn.addEventListener("click", () => {
+    fetchAnime("top/anime");
+});
+
+viewMoreBtn.addEventListener("click", () => {
+    visibleCount += 12;
+    render();
+});
+
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+    const isLight = document.body.classList.contains("light-mode");
+    themeToggle.textContent = isLight ? "🌙" : "🌓";
+});
+
+// Initial Fetch
+fetchAnime("top/anime"); // Start with trending anime for variety
