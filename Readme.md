@@ -38,7 +38,6 @@ This project uses the **Jikan API**, an unofficial MyAnimeList API.
 
 - **HTML5** – Structure of the application  
 - **CSS3** – Styling and layout  
-- **JavaScript (ES6)** – Logic and API handling  
-- **React.js** – Frontend framework for building UI components  
+- **JavaScript (ES6)** – Logic and API handling   
 
 ---

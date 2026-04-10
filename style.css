@@ -32,7 +32,7 @@ body {
     background-color: #000;
 }
 
-/* Background Video */
+
 .video {
     position: fixed;
     top: 0;
@@ -43,7 +43,7 @@ body {
     z-index: -1;
 }
 
-/* Main Container */
+
 .overlay {
     text-align: center;
     color: var(--text);
@@ -56,7 +56,7 @@ body {
     -webkit-backdrop-filter: blur(8px);
 }
 
-/* Navbar & Theme Toggle */
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -84,7 +84,6 @@ h1 {
     box-shadow: var(--shadow);
 }
 
-/* Controls Section */
 .controls {
     display: flex;
     flex-direction: column;
@@ -100,7 +99,7 @@ h1 {
     justify-content: center;
 }
 
-/* Inputs & Selects */
+
 input, select, .controls button {
     padding: 12px 20px;
     border-radius: 12px;
@@ -128,7 +127,7 @@ input::placeholder { color: var(--text-muted); }
     transform: translateY(-2px);
 }
 
-/* Results Grid */
+
 #results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -136,7 +135,7 @@ input::placeholder { color: var(--text-muted); }
     padding: 20px 0;
 }
 
-/* Anime Card - Glassmorphism */
+
 .card {
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
@@ -201,7 +200,7 @@ input::placeholder { color: var(--text-muted); }
     border: 1px solid var(--glass-border);
 }
 
-/* Synopsis */
+
 .synopsis {
     font-size: 13px;
     color: var(--text-muted);
@@ -215,7 +214,7 @@ input::placeholder { color: var(--text-muted); }
     animation: fadeIn 0.3s ease;
 }
 
-/* View More Button */
+
 .view-more {
     margin: 40px auto;
     display: block;
@@ -235,7 +234,7 @@ input::placeholder { color: var(--text-muted); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsiveness */
+
 @media (max-width: 768px) {
     input { width: 100%; }
     h1 { font-size: 2rem; }
